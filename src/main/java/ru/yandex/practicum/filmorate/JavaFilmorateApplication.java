@@ -2,8 +2,11 @@ package ru.yandex.practicum.filmorate;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.ComponentScan;
+
 
 @SpringBootApplication
+@ComponentScan(basePackages="ru.yandex.practicum")
 public class JavaFilmorateApplication {
 
 	public static void main(String[] args) {

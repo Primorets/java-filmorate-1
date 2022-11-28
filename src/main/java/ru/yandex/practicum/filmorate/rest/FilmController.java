@@ -20,8 +20,7 @@ public class FilmController {
 
     @GetMapping
     public List<Film> getFilms(Film film) {
-        List<Film> filmsList = new ArrayList<>();
-        filmsList.addAll(allFilms.values());
+        List<Film> filmsList = new ArrayList<>(allFilms.values());
         log.info("Получен запрос. Список всех фильмов");
         return filmsList;
     }

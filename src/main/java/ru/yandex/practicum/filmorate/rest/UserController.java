@@ -23,8 +23,7 @@ public class UserController {
 
     @GetMapping()
     public List<User> getAllUsers() {
-        List<User> usersList = new ArrayList<>();
-        usersList.addAll(allUsers.values());
+        List<User> usersList = new ArrayList<>(allUsers.values());
         log.info("Получен запрос. Список всех пользователей");
         return usersList;
     }

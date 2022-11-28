@@ -3,6 +3,7 @@ package ru.yandex.practicum.filmorate.rest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.model.exception.FilmsAndUsersValidationException;
 
@@ -17,17 +18,19 @@ import java.util.*;
 @RequestMapping("/users")
 public class UserController {
 
-    Map<Integer, User> allUsers = new HashMap<>();
-    int id = 0;
+    private Map<Integer, User> allUsers = new HashMap<>();
+    private int id = 0;
 
     @GetMapping()
-    Collection<User> getAllUsers() {
+    public List<User> getAllUsers() {
+        List<User> usersList = new ArrayList<>();
+        usersList.addAll(allUsers.values());
         log.info("Получен запрос. Список всех пользователей");
-        return allUsers.values();
+        return usersList;
     }
 
     @PostMapping()
-    User createUser(@Valid @RequestBody User user) {
+    public User createUser(@Valid @RequestBody User user) {
         user.setId(++id);
         validateUser(user);
         allUsers.put(id, user);
@@ -39,7 +42,7 @@ public class UserController {
     }
 
     @PutMapping()
-    User updateUser(@Valid @RequestBody User user) {
+    public User updateUser(@Valid @RequestBody User user) {
         validateUser(user);
         if (!allUsers.containsKey(user.getId())) {
             throw new ValidationException("invalid id");
@@ -52,15 +55,16 @@ public class UserController {
         return user;
     }
 
-    void validateUser(User user) throws IllegalArgumentException {
+    protected void validateUser(User user) throws IllegalArgumentException {
         if (user.getBirthday().isAfter(LocalDate.now())) {
-            throw new FilmsAndUsersValidationException("invalid birthday");
+            throw new FilmsAndUsersValidationException("Не верная дата рождения. Дата не может быть в будущем.");
         }
         if (user.getLogin().isEmpty()) {
-            throw new FilmsAndUsersValidationException("invalid login");
+            throw new FilmsAndUsersValidationException("Не верный логин. Логин не может быть пустым.");
         }
         if (user.getEmail().isEmpty() || !user.getEmail().contains("@") || user.getEmail().isBlank()) {
-            throw new FilmsAndUsersValidationException("invalid email");
+            throw new FilmsAndUsersValidationException("Не верный адрес электронной почты." +
+                    " Адрес должен содержать символ '@' и не должены быть пустым.");
         }
         if (user.getName() == null) {
             user.setName(user.getLogin());

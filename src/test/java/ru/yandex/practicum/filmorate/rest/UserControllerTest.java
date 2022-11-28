@@ -1,8 +1,10 @@
 package ru.yandex.practicum.filmorate.rest;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.function.Executable;
 import org.springframework.boot.test.context.SpringBootTest;
+import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.model.exception.FilmsAndUsersValidationException;
 
@@ -14,64 +16,49 @@ import static org.junit.jupiter.api.Assertions.*;
 class UserControllerTest {
 
     UserController userController = new UserController();
+    User user;
+
+    @BeforeEach
+    public void createUserForTest() {
+        user = new User(1, "Imia", LocalDate.of(2000, 10, 11),
+                "mail@mail.com", "log");
+    }
 
     @Test
     void shouldCreateUserWithIncorrectEmailWithoutDog() {
-        User user = new User(1, "Imia", LocalDate.of(2000, 10, 11),
-                "mailmail.com", "log");
+        user.setEmail("mailmail.com");
 
         FilmsAndUsersValidationException exception = assertThrows(FilmsAndUsersValidationException.class,
-                new Executable() {
-                    @Override
-                    public void execute() throws Throwable {
-                        userController.validateUser(user);
-                    }
-                });
-        assertEquals("invalid email", exception.getMessage());
+                () -> userController.validateUser(user));
+        assertEquals("Не верный адрес электронной почты. " +
+                "Адрес должен содержать символ '@' и не должены быть пустым.", exception.getMessage());
     }
 
     @Test
     void shouldCreateUserWithEmptyEmail() {
-        User user = new User(1, "Imia", LocalDate.of(2000, 10, 11),
-                "", "log");
+        user.setEmail("");
 
         FilmsAndUsersValidationException exception = assertThrows(FilmsAndUsersValidationException.class,
-                new Executable() {
-                    @Override
-                    public void execute() throws Throwable {
-                        userController.validateUser(user);
-                    }
-                });
-        assertEquals("invalid email", exception.getMessage());
+                () -> userController.validateUser(user));
+        assertEquals("Не верный адрес электронной почты. " +
+                "Адрес должен содержать символ '@' и не должены быть пустым.", exception.getMessage());
     }
 
     @Test
     void shouldCreateUserWithoutLogin() {
-        User user = new User(1, "Imia", LocalDate.of(2000, 10, 11),
-                "mail@mail.com", "");
+        user.setLogin("");
 
         FilmsAndUsersValidationException exception = assertThrows(FilmsAndUsersValidationException.class,
-                new Executable() {
-                    @Override
-                    public void execute() throws Throwable {
-                        userController.validateUser(user);
-                    }
-                });
-        assertEquals("invalid login", exception.getMessage());
+                () -> userController.validateUser(user));
+        assertEquals("Не верный логин. Логин не может быть пустым.", exception.getMessage());
     }
 
     @Test
     void shouldCreateUserWithIncorrectBirthday() {
-        User user = new User(1, "Imia", LocalDate.of(2030, 10, 11),
-                "mail@mail.com", "log");
+        user.setBirthday(LocalDate.of(2030, 10, 11));
 
         FilmsAndUsersValidationException exception = assertThrows(FilmsAndUsersValidationException.class,
-                new Executable() {
-                    @Override
-                    public void execute() throws Throwable {
-                        userController.validateUser(user);
-                    }
-                });
-        assertEquals("invalid birthday", exception.getMessage());
+                () -> userController.validateUser(user));
+        assertEquals("Не верная дата рождения. Дата не может быть в будущем.", exception.getMessage());
     }
 }

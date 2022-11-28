@@ -15,17 +15,19 @@ import java.util.*;
 @RequestMapping("films")
 public class FilmController {
 
-    Map<Integer, Film> allFilms = new HashMap();
-    int id;
+    private Map<Integer, Film> allFilms = new HashMap<>();
+    private int id;
 
     @GetMapping
-    Collection<Film> getFilms(Film film) {
+    public List<Film> getFilms(Film film) {
+        List<Film> filmsList = new ArrayList<>();
+        filmsList.addAll(allFilms.values());
         log.info("Получен запрос. Список всех фильмов");
-        return allFilms.values();
+        return filmsList;
     }
 
     @PostMapping
-    Film createFilm(@Valid @RequestBody Film film) {
+    public Film createFilm(@Valid @RequestBody Film film) {
         film.setId(++id);
         validateFilm(film);
         allFilms.put(id, film);
@@ -37,7 +39,7 @@ public class FilmController {
     }
 
     @PutMapping
-    Film updateUser(@Valid @RequestBody Film film) {
+    public Film updateUser(@Valid @RequestBody Film film) {
         validateFilm(film);
         if (!allFilms.containsKey(film.getId())) {
             throw new ValidationException("invalid id");
@@ -50,18 +52,21 @@ public class FilmController {
         return film;
     }
 
-    void validateFilm(Film film) throws FilmsAndUsersValidationException {
+    protected void validateFilm(Film film) throws FilmsAndUsersValidationException {
         if (film.getDescription().length() > 200) {
-            throw new FilmsAndUsersValidationException("Описание больше 200 символов.");
+            throw new FilmsAndUsersValidationException("Описание фильма больше 200 символов. " +
+                    "Необходимо сократить описание.");
         }
         if (film.getReleaseDate().isBefore(LocalDate.of(1895, 12, 28))) {
-            throw new FilmsAndUsersValidationException("invalid releaseDate");
+            throw new FilmsAndUsersValidationException("Не верная дата выхода фильма. " +
+                    "Дата выхода фильма должна быть не раньше, чем 28 декабря 1895 года.");
         }
         if (film.getName() == null || film.getName().isEmpty() || film.getName().isBlank()) {
-            throw new FilmsAndUsersValidationException("invalid name");
+            throw new FilmsAndUsersValidationException("Не верное название. Название фильма не может быть пустым.");
         }
         if (film.getDuration() < 0) {
-            throw new FilmsAndUsersValidationException("invalid duration");
+            throw new FilmsAndUsersValidationException("Не верная продолжительность фильма. " +
+                    "Продолжительность фильма не может быть меньше 0.");
         }
     }
 }

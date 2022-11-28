@@ -19,7 +19,7 @@ class UserControllerTest {
     User user;
 
     @BeforeEach
-    public void createUserForTest() {
+    void createUserForTest() {
         user = new User(1, "Imia", LocalDate.of(2000, 10, 11),
                 "mail@mail.com", "log");
     }

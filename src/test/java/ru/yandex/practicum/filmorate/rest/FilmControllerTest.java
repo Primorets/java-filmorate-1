@@ -16,7 +16,7 @@ class FilmControllerTest {
     Film film;
 
     @BeforeEach
-    public void createFilmForTest() {
+    void createFilmForTest() {
         film = new Film(1, "film1", "good film",
                 LocalDate.of(2000, 10, 11), 60);
     }

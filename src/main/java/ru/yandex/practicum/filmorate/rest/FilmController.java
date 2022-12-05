@@ -17,6 +17,8 @@ public class FilmController {
 
     private Map<Integer, Film> allFilms = new HashMap<>();
     private int id;
+    private static final int MAX_DESCRIPTION_SIMBOLS = 200;
+    private static final LocalDate FIRST_FILM_DATE  = LocalDate.of(1895, 12, 28);
 
     @GetMapping
     public List<Film> getFilms(Film film) {
@@ -52,11 +54,11 @@ public class FilmController {
     }
 
     protected void validateFilm(Film film) throws FilmsAndUsersValidationException {
-        if (film.getDescription().length() > 200) {
+        if (film.getDescription().length() > MAX_DESCRIPTION_SIMBOLS) {
             throw new FilmsAndUsersValidationException("Описание фильма больше 200 символов. " +
                     "Необходимо сократить описание.");
         }
-        if (film.getReleaseDate().isBefore(LocalDate.of(1895, 12, 28))) {
+        if (film.getReleaseDate().isBefore(FIRST_FILM_DATE)) {
             throw new FilmsAndUsersValidationException("Не верная дата выхода фильма. " +
                     "Дата выхода фильма должна быть не раньше, чем 28 декабря 1895 года.");
         }

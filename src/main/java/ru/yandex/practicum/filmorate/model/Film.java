@@ -21,4 +21,5 @@ public class Film {
     private LocalDate releaseDate;
     @Min(value = 0, message = "min =0")
     private int duration;
+
 }

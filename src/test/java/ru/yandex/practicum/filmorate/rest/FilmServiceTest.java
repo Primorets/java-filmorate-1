@@ -5,14 +5,16 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.exception.FilmsAndUsersValidationException;
+import ru.yandex.practicum.filmorate.service.FilmService;
 
 import java.time.LocalDate;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
-class FilmControllerTest {
-    FilmController filmController = new FilmController();
+class FilmServiceTest {
+    FilmService filmService = new FilmService();
+
     Film film;
 
     @BeforeEach
@@ -26,7 +28,7 @@ class FilmControllerTest {
         film.setName("");
 
         FilmsAndUsersValidationException exception = assertThrows(FilmsAndUsersValidationException.class,
-                () -> filmController.validateFilm(film));
+                () -> filmService.validateFilm(film));
         assertEquals("Не верное название. Название фильма не может быть пустым.", exception.getMessage());
     }
 
@@ -35,7 +37,7 @@ class FilmControllerTest {
         film.setDescription("a".repeat(201));
 
         FilmsAndUsersValidationException exception = assertThrows(FilmsAndUsersValidationException.class,
-                () -> filmController.validateFilm(film));
+                () -> filmService.validateFilm(film));
         assertEquals("Описание фильма больше 200 символов. " +
                 "Необходимо сократить описание.", exception.getMessage());
     }
@@ -45,7 +47,7 @@ class FilmControllerTest {
         film.setReleaseDate(LocalDate.of(1000, 10, 11));
 
         FilmsAndUsersValidationException exception = assertThrows(FilmsAndUsersValidationException.class,
-                () -> filmController.validateFilm(film));
+                () -> filmService.validateFilm(film));
         assertEquals("Не верная дата выхода фильма. " +
                 "Дата выхода фильма должна быть не раньше, чем 28 декабря 1895 года.", exception.getMessage());
     }
@@ -55,7 +57,7 @@ class FilmControllerTest {
         film.setDuration(-60);
 
         FilmsAndUsersValidationException exception = assertThrows(FilmsAndUsersValidationException.class,
-                () -> filmController.validateFilm(film));
+                () -> filmService.validateFilm(film));
         assertEquals("Не верная продолжительность фильма. " +
                 "Продолжительность фильма не может быть меньше 0.", exception.getMessage());
     }

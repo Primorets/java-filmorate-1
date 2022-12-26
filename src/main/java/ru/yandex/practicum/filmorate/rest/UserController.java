@@ -5,11 +5,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.model.exception.FilmsAndUsersValidationException;
 import ru.yandex.practicum.filmorate.service.UserService;
 
 import javax.validation.Valid;
-import java.time.LocalDate;
 import java.util.*;
 
 @Slf4j
@@ -29,12 +27,12 @@ public class UserController {
 
     @GetMapping("/{id}")
     public User getUser(@PathVariable int id) {
+        log.info("Получен запрос. Список всех пользователей");
         return userService.get(id);
     }
 
     @PostMapping
     public User createUser(@Valid @RequestBody User user) {
-        validateUser(user);
         userService.save(user);
         log.info("Добавлен пользователь: " +
                 user.getName() + " ID: " + user.getId() + " эмэйл: " +
@@ -45,7 +43,6 @@ public class UserController {
 
     @PutMapping
     public User updateUser(@Valid @RequestBody User user) {
-        validateUser(user);
         userService.get(user.getId());
         userService.save(user);
         log.info("Обновлён пользователь: " +
@@ -71,27 +68,13 @@ public class UserController {
 
     @GetMapping("/{id}/friends")
     public List<User> getAllFriendsList(@PathVariable int id) {
+        log.info("Запрос списка друзей пользователя ID: " + id);
         return userService.getALlFriends(id);
     }
 
     @GetMapping("/{id}/friends/common/{otherId}")
     public List<User> getOtherFriends(@PathVariable int id, @PathVariable int otherId) {
+        log.info("Запрос списка общих друзей пользователя с ID: " + id + "и пользователся с ID: " + otherId);
         return userService.getOthersFriends(id, otherId);
-    }
-
-    protected void validateUser(User user) throws IllegalArgumentException {
-        if (user.getBirthday().isAfter(LocalDate.now())) {
-            throw new FilmsAndUsersValidationException("Не верная дата рождения. Дата не может быть в будущем.");
-        }
-        if (user.getLogin().isEmpty()) {
-            throw new FilmsAndUsersValidationException("Не верный логин. Логин не может быть пустым.");
-        }
-        if (user.getEmail().isEmpty() || !user.getEmail().contains("@") || user.getEmail().isBlank()) {
-            throw new FilmsAndUsersValidationException("Не верный адрес электронной почты." +
-                    " Адрес должен содержать символ '@' и не должены быть пустым.");
-        }
-        if (user.getName() == null || user.getName().isEmpty()) {
-            user.setName(user.getLogin());
-        }
     }
 }

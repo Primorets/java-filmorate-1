@@ -10,8 +10,6 @@ import ru.yandex.practicum.filmorate.exception.InternalServerError;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.exception.FilmsAndUsersValidationException;
 
-import javax.validation.ValidationException;
-
 @RestControllerAdvice
 @Slf4j
 public class ErrorHandler {
@@ -36,6 +34,4 @@ public class ErrorHandler {
         log.info("500 {}", internalServerError.getMessage());
         return new ErrorResponse(internalServerError.getMessage());
     }
-
-
 }

@@ -6,8 +6,10 @@ import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.ListIsEmptyException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
+import ru.yandex.practicum.filmorate.model.exception.FilmsAndUsersValidationException;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 
+import java.time.LocalDate;
 import java.util.*;
 
 @Slf4j
@@ -30,9 +32,9 @@ public class UserService {
 
     public List<User> getALlFriends(int userId) {
         List<User> friends = new ArrayList<>();
-        if (userStorage.getAllUsersList().isEmpty() || userStorage.getAllUsersList() == null){
+        if (userStorage.getAllUsersList().isEmpty() || userStorage.getAllUsersList() == null) {
             throw new ListIsEmptyException("В списке пользователей ещё нет пользователей");
-        } else if (userStorage.get(userId).getFriendsId().isEmpty()||userStorage.get(userId).getFriendsId()==null){
+        } else if (userStorage.get(userId).getFriendsId().isEmpty() || userStorage.get(userId).getFriendsId() == null) {
             throw new ListIsEmptyException("У пользователя ещё нет друзей");
         } else {
             Iterator<Integer> friendId = userStorage.get(userId).getFriendsId().iterator();
@@ -44,6 +46,7 @@ public class UserService {
     }
 
     public User save(User user) {
+        validateUser(user);
         return userStorage.save(user);
     }
 
@@ -70,7 +73,7 @@ public class UserService {
     }
 
     public List<User> getOthersFriends(int userId, int otherId) {
-        Set<Integer> firstUserFriends = new HashSet<>(get(userId).getFriendsId()); //get(userId).getFriendsId();
+        Set<Integer> firstUserFriends = new HashSet<>(get(userId).getFriendsId());
         Set<Integer> secondUserFriends = get(otherId).getFriendsId();
         firstUserFriends.retainAll(secondUserFriends);
         List<User> otherFriends = new ArrayList<>();
@@ -84,5 +87,21 @@ public class UserService {
     public boolean checkId(int userId, int friendId) {
         User firstUser = get(userId);
         return firstUser.getFriendsId().contains(friendId);
+    }
+
+    public void validateUser(User user) throws IllegalArgumentException {
+        if (user.getBirthday().isAfter(LocalDate.now())) {
+            throw new FilmsAndUsersValidationException("Не верная дата рождения. Дата не может быть в будущем.");
+        }
+        if (user.getLogin().isEmpty()) {
+            throw new FilmsAndUsersValidationException("Не верный логин. Логин не может быть пустым.");
+        }
+        if (user.getEmail().isEmpty() || !user.getEmail().contains("@") || user.getEmail().isBlank()) {
+            throw new FilmsAndUsersValidationException("Не верный адрес электронной почты." +
+                    " Адрес должен содержать символ '@' и не должены быть пустым.");
+        }
+        if (user.getName() == null || user.getName().isEmpty()) {
+            user.setName(user.getLogin());
+        }
     }
 }

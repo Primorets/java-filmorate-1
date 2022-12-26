@@ -8,7 +8,8 @@ import java.util.*;
 @Component
 public class InMemoryUserStorage implements UserStorage {
     private int generator = 0;
-    private HashMap<Integer, User> allUsers = new HashMap<>();
+    private Map<Integer, User> allUsers = new HashMap<>();
+
     @Override
     public User get(int userId) {
         return allUsers.get(userId);
@@ -16,9 +17,9 @@ public class InMemoryUserStorage implements UserStorage {
 
     @Override
     public List<User> getAllUsersList() {
-        List<User> usersList = new ArrayList<>(allUsers.values());
-        return usersList;
+        return new ArrayList<>(allUsers.values());
     }
+
     @Override
     public User save(User user) {
         if (!allUsers.containsKey(user.getId())) {

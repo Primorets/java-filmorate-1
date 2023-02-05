@@ -1,9 +1,11 @@
 # java-filmorate
 Template repository for Filmorate project.
-![img.png](img.png)
+
 
 # Database description
+## ER diagram:
 
+![img.png](img.png)
 ## DB request examples:
 
 ### Get all users:

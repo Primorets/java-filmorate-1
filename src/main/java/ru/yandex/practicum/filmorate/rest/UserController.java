@@ -16,8 +16,12 @@ import java.util.*;
 @RequestMapping("/users")
 public class UserController {
 
-    @Autowired
     public UserService userService;
+
+    @Autowired
+    public UserController(UserService userService) {
+        this.userService = userService;
+    }
 
     @GetMapping
     public List<User> getAllUsers() {
@@ -27,7 +31,7 @@ public class UserController {
 
     @GetMapping("/{id}")
     public User getUser(@PathVariable int id) {
-        log.info("Получен запрос. Список всех пользователей");
+        log.info("Получен запрос. Пользователь с ID:" + id);
         return userService.get(id);
     }
 
@@ -50,6 +54,12 @@ public class UserController {
                 user.getEmail() + " логин: " + user.getLogin() +
                 " дата рождения: " + user.getBirthday());
         return user;
+    }
+
+    @DeleteMapping("{id}")
+    public void deleteUserById(@PathVariable int id) {
+        log.info("Удалён пользователь с ID: " + id);
+        userService.deleteUserById(id);
     }
 
     @PutMapping("/{id}/friends/{friendId}")
@@ -75,6 +85,7 @@ public class UserController {
     @GetMapping("/{id}/friends/common/{otherId}")
     public List<User> getOtherFriends(@PathVariable int id, @PathVariable int otherId) {
         log.info("Запрос списка общих друзей пользователя с ID: " + id + "и пользователся с ID: " + otherId);
-        return userService.getOthersFriends(id, otherId);
+        return userService.getCommonFriends(id, otherId);
     }
+
 }

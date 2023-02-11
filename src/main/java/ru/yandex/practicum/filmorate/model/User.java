@@ -36,7 +36,7 @@ public class User {
     Set<Integer> friendsId = new HashSet<>();
 
     @JsonIgnore
-    private Map<Integer,Boolean> friendsStatusMap = new HashMap<>();
+    private Map<Integer, Boolean> friendsStatusMap = new HashMap<>();
 
     public User(Integer id, String name, LocalDate birthday, String email, String login) {
         this.id = id;

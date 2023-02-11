@@ -87,5 +87,4 @@ public class UserController {
         log.info("Запрос списка общих друзей пользователя с ID: " + id + "и пользователся с ID: " + otherId);
         return userService.getCommonFriends(id, otherId);
     }
-
 }

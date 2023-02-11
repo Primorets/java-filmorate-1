@@ -21,7 +21,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-
 @Component("dbFilmStorage")
 @Repository
 public class DbFilmStorage implements FilmStorage {
@@ -66,7 +65,10 @@ public class DbFilmStorage implements FilmStorage {
 
     @Override
     public Film get(int filmId) {
-        final String sqlQuery = "SELECT * FROM films f LEFT JOIN mpa ON mpa.mpa_id = f.mpa_id WHERE film_id = ?";
+        final String sqlQuery = "SELECT * " +
+                "FROM films f " +
+                "LEFT JOIN mpa ON mpa.mpa_id = f.mpa_id " +
+                "WHERE film_id = ?";
         if (getAllFilms().size() < filmId) {
             throw new NotFoundException("Не найден ID.");
         }
@@ -75,7 +77,12 @@ public class DbFilmStorage implements FilmStorage {
 
     @Override
     public Film save(Film film) {
-        String sqlQuery = "INSERT INTO films(film_name,description, release_date, duration,  mpa_id) " +
+        String sqlQuery = "INSERT INTO films" +
+                "(film_name," +
+                "description," +
+                " release_date," +
+                " duration, " +
+                " mpa_id) " +
                 "VALUES (?,?,?,?,?)";
 
         KeyHolder keyHolder = new GeneratedKeyHolder();
@@ -100,9 +107,15 @@ public class DbFilmStorage implements FilmStorage {
 
     @Override
     public Film updateFilm(Film film) {
-        String sqlQueryForDeleteGenre = "DELETE FROM film_genres WHERE film_id=?";
-        String sqlQueryForUpdateFilm = "UPDATE films SET film_name = ?, description = ?, release_date = ?, " +
-                "duration = ?, mpa_id = ? WHERE film_id = ?";
+        String sqlQueryForDeleteGenre = "DELETE FROM film_genres" +
+                " WHERE film_id=?";
+        String sqlQueryForUpdateFilm = "UPDATE films " +
+                "SET film_name = ?," +
+                " description = ?," +
+                " release_date = ?, " +
+                "duration = ?," +
+                " mpa_id = ? " +
+                "WHERE film_id = ?";
         jdbcTemplate.update(sqlQueryForDeleteGenre, film.getId());
         jdbcTemplate.update(sqlQueryForUpdateFilm, film.getName(), film.getDescription(),
                 Date.valueOf(film.getReleaseDate()), film.getDuration(), film.getMpa().getId(), film.getId());
@@ -111,71 +124,101 @@ public class DbFilmStorage implements FilmStorage {
 
     @Override
     public void addLike(Film film, User user) {
-        String sqlQuery = "INSERT INTO films_like(film_id, user_id) VALUES (?,?)";
+        String sqlQuery = "INSERT INTO films_like" +
+                "(film_id, " +
+                "user_id) " +
+                "VALUES (?,?)";
         jdbcTemplate.update(sqlQuery, film.getId(),
                 user.getId());
     }
 
     @Override
     public void deleteLike(Film film, User user) {
-        String sqlQuery = "DELETE FROM films_like WHERE film_id =?";
+        String sqlQuery = "DELETE FROM films_like" +
+                " WHERE film_id =?";
         jdbcTemplate.update(sqlQuery, user.getId());
     }
 
     @Override
     public List<Film> getLikeFromUserId0ForFilm(int filmId, int userId) {
-        String sqlQuery = "SELECT * FROM films f LEFT JOIN(SELECT film_id, user_id  FROM films_LIKE" +
-                " GROUP BY film_id) l ON f.film_id=l.film_id LEFT JOIN mpa m ON m.mpa_id=f.mpa_id " +
+        String sqlQuery = "SELECT * " +
+                "FROM films f " +
+                "LEFT JOIN(SELECT film_id, " +
+                "user_id  " +
+                "FROM films_LIKE" +
+                " GROUP BY film_id) l ON f.film_id=l.film_id " +
+                "LEFT JOIN mpa m ON m.mpa_id=f.mpa_id " +
                 "WHERE l.film_id=? AND l.user_id=?";
         return jdbcTemplate.query(sqlQuery, this::mapRowForFilms, filmId, userId);
     }
 
     @Override
     public List<Film> getAllFilms() {
-        final String sqlQuery = "SELECT * FROM films f LEFT JOIN mpa ON mpa.mpa_id=F.mpa_id";
+        final String sqlQuery = "SELECT * " +
+                "FROM films f " +
+                "LEFT JOIN mpa ON mpa.mpa_id=F.mpa_id";
         return jdbcTemplate.query(sqlQuery, this::mapRowForFilms);
     }
 
     @Override
     public List<Film> getMostPopularFilms(int countLikes) {
-        String sqlQuery = "SELECT * FROM films f left join(SELECT film_id, count(*) likes_count  FROM FILMS_LIKE" +
-                " GROUP BY film_id) l ON f.film_id=l.film_id LEFT JOIN mpa m ON m.mpa_id=f.mpa_id ORDER BY " +
+        String sqlQuery = "SELECT * " +
+                "FROM films f " +
+                "LEFT JOIN(SELECT film_id," +
+                " count(*) likes_count  " +
+                "FROM FILMS_LIKE" +
+                " GROUP BY film_id) l ON f.film_id=l.film_id " +
+                "LEFT JOIN mpa m ON m.mpa_id=f.mpa_id " +
+                "ORDER BY " +
                 "l.likes_count DESC LIMIT ?";
         return jdbcTemplate.query(sqlQuery, this::mapRowForFilms, countLikes);
     }
 
     @Override
     public List<Genre> getAllGenres() {
-        String sqlQuery = "SELECT * FROM genres";
+        String sqlQuery = "SELECT * " +
+                "FROM genres";
         return jdbcTemplate.query(sqlQuery, this::MapToGenre);
     }
 
     public List<Genre> getGenreByIdForFilms(int genreId) {
-        String sqlQuery = "SELECT f.genre_id, genre_name FROM film_genres f LEFT JOIN (SELECT * FROM genres) g " +
-                "ON f.genre_id=g.genre_id WHERE film_id = ?";
+        String sqlQuery = "SELECT f.genre_id, " +
+                "genre_name " +
+                "FROM film_genres f " +
+                "LEFT JOIN (SELECT * " +
+                "FROM genres) g " +
+                "ON f.genre_id=g.genre_id " +
+                "WHERE film_id = ?";
         return jdbcTemplate.query(sqlQuery, this::MapToGenre, genreId);
     }
 
     @Override
     public Genre getGenreById(int genreId) {
-        String sqlQuery = "SELECT * FROM genres WHERE genre_id=?";
+        String sqlQuery = "SELECT * " +
+                "FROM genres " +
+                "WHERE genre_id=?";
         return jdbcTemplate.queryForObject(sqlQuery, this::MapToGenre, genreId);
     }
 
     @Override
     public List<Mpa> getAllMpa() {
-        String sqlQuery = "SELECT * FROM MPA";
+        String sqlQuery = "SELECT * " +
+                "FROM MPA";
         return jdbcTemplate.query(sqlQuery, this::MapToMpa);
     }
 
     @Override
     public Mpa getMpaById(int mpaId) {
-        String sqlQuery = "SELECT * FROM MPA WHERE mpa_id = ?";
+        String sqlQuery = "SELECT * " +
+                "FROM mpa " +
+                "WHERE mpa_id = ?";
         return jdbcTemplate.queryForObject(sqlQuery, this::MapToMpa, mpaId);
     }
 
     private Film addGenreForFilm(Film film) {
-        String sqlQuery = "INSERT INTO film_genres (film_id, genre_id) VALUES ( ?,? )";
+        String sqlQuery = "INSERT INTO film_genres (film_id," +
+                " genre_id) " +
+                "VALUES ( ?,? )";
         List<Genre> uniqGenre = film.getGenres()
                 .stream()
                 .distinct()

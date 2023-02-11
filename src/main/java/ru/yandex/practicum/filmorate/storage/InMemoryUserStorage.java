@@ -80,15 +80,4 @@ public class InMemoryUserStorage implements UserStorage {
         }
         return friends;
     }
-
-    /*public boolean isFriendsCheck(User user, User friend) {
-        boolean confirmFriend;
-        if (user.getFriendsId().contains(friend.getId()) && friend.getFriendsId().contains(user.getId())) {
-            confirmFriend = true;
-        } else {
-            throw new NotFoundException("Пользователь с ID: " + user.getId()
-                    + " не делал заявку в друзья пользователю с ID: " + friend.getId());
-        }
-        return confirmFriend;
-    }*/
 }

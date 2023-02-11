@@ -9,7 +9,12 @@ Template repository for Filmorate project.
 
 ### Get all users:
 
-`SELECT user_id, login, user_name, email, birthday FROM users`
+`SELECT user_id,
+login,
+user_name,
+email,
+birthday
+FROM users`
 
 ### Get film by ID:
 

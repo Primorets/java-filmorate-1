@@ -63,10 +63,6 @@ public class UserService {
             User user = get(userId);
             User friend = get(friendId);
             userStorage.addFriend(user, friend);
-            if (isFriendsCheck(user, friend)) {
-                user.getFriendsStatusMap().put(friendId, true);
-                friend.getFriendsStatusMap().put(userId, true);
-            }
         } else {
             throw new NotFoundException("Пользователь с ID: " + friendId
                     + "уже в друзьях у пользователя с ID: " + userId);
@@ -77,9 +73,6 @@ public class UserService {
         try {
             User user = get(userId);
             User friend = get(friendId);
-            if (isFriendsCheck(user, friend)) {
-                friend.getFriendsStatusMap().put(userId, false);
-            }
             userStorage.deleteFriends(user, friend);
         } catch (Exception exception) {
             throw new NotFoundException("Пользователь с ID: " + friendId
@@ -113,16 +106,5 @@ public class UserService {
         if (user.getName() == null || user.getName().isEmpty()) {
             user.setName(user.getLogin());
         }
-    }
-
-    public boolean isFriendsCheck(User user, User friend) {
-        boolean confirmFriend;
-        if (user.getFriendsId().contains(friend.getId()) && friend.getFriendsId().contains(user.getId())) {
-            confirmFriend = true;
-        } else {
-            throw new NotFoundException("Пользователь с ID: " + user.getId()
-                    + " не делал заявку в друзья пользователю с ID: " + friend.getId());
-        }
-        return confirmFriend;
     }
 }

@@ -10,6 +10,8 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.storage.impl.DbUserStorage;
+
 import java.time.LocalDate;
 import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -28,7 +30,7 @@ class DbUserStorageTest {
 
     private User user3;
     @Autowired
-    DbUserStorageTest(@Qualifier("dbUserStorage")DbUserStorage userStorage) {
+    DbUserStorageTest(@Qualifier("dbUserStorage") DbUserStorage userStorage) {
         this.userStorage = userStorage;
     }
 

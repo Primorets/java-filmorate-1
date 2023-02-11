@@ -113,19 +113,15 @@ public class FilmService {
         return filmStorage.getMpaById(mpaId);
     }
 
-
     public void checkIdForCorrect(int id) {
         if (id < 0) {
             throw new NotFoundException("Uncorrected id= " + id);
-
         }
     }
 
     public boolean checkId(int filmId, int userId) {
         checkIdForCorrect(filmId);
         checkIdForCorrect(userId);
-        Film film = filmStorage.get(filmId);
-        User user = userStorage.get(userId);
         if (userStorage.get(userId) == null) {
             throw new NotFoundException("User with id= " + userId + "not found");
         }

@@ -10,6 +10,7 @@ import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
+import ru.yandex.practicum.filmorate.storage.impl.mapping.MapRowForUser;
 
 import java.sql.*;
 import java.time.LocalDate;
@@ -23,16 +24,6 @@ public class DbUserStorage implements UserStorage {
     @Qualifier("getTemplate")
     @Autowired
     private JdbcTemplate jdbcTemplate;
-
-    private User mapRowForUsers(ResultSet resultSet, int rowNum) throws SQLException {
-        return User.builder()
-                .id(resultSet.getInt("user_id"))
-                .name(resultSet.getString("user_name"))
-                .birthday(resultSet.getDate("birthday").toLocalDate())
-                .email(resultSet.getString("email"))
-                .login(resultSet.getString("login"))
-                .build();
-    }
 
     @Override
     public User save(User user) {
@@ -76,7 +67,7 @@ public class DbUserStorage implements UserStorage {
                 " login," +
                 " birthday" +
                 " FROM users";
-        List<User> users = jdbcTemplate.query(sqlQuery, this::mapRowForUsers);
+        List<User> users = jdbcTemplate.query(sqlQuery, new MapRowForUser());
         if (users.size() < userId) {
             throw new NotFoundException("Не найден ID.");
         }
@@ -87,7 +78,7 @@ public class DbUserStorage implements UserStorage {
                 " birthday" +
                 " FROM users" +
                 " WHERE user_id =?";
-        return jdbcTemplate.queryForObject(sqlQueryForObject, this::mapRowForUsers, userId);
+        return jdbcTemplate.queryForObject(sqlQueryForObject, new MapRowForUser(), userId);
     }
 
     @Override
@@ -101,7 +92,7 @@ public class DbUserStorage implements UserStorage {
                 " FROM friends " +
                 "WHERE user_one_id=?) o ON u.user_id=o.friend_id";
 
-        return jdbcTemplate.query(sqlQuery, this::mapRowForUsers, id, friendId);
+        return jdbcTemplate.query(sqlQuery, new MapRowForUser(), id, friendId);
     }
 
     @Override
@@ -112,7 +103,7 @@ public class DbUserStorage implements UserStorage {
                 " email," +
                 " birthday" +
                 " FROM users";
-        return jdbcTemplate.query(sqlQuery, this::mapRowForUsers);
+        return jdbcTemplate.query(sqlQuery, new MapRowForUser());
     }
 
     @Override
@@ -159,6 +150,6 @@ public class DbUserStorage implements UserStorage {
                 "JOIN (SELECT friend_id " +
                 "FROM friends " +
                 "WHERE user_one_id=?) f ON u.user_id=f.friend_id";
-        return jdbcTemplate.query(sqlQueryOneUser, this::mapRowForUsers, userId);
+        return jdbcTemplate.query(sqlQueryOneUser, new MapRowForUser(), userId);
     }
 }

@@ -1,6 +1,5 @@
 package ru.yandex.practicum.filmorate.storage.impl;
 
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -29,7 +28,6 @@ import java.util.stream.Collectors;
 @Component("dbFilmStorage")
 @Repository
 public class DbFilmStorage implements FilmStorage {
-
 
     @Qualifier("getTemplate")
     @Autowired
@@ -165,7 +163,6 @@ public class DbFilmStorage implements FilmStorage {
                 "ORDER BY " +
                 "l.likes_count DESC LIMIT ?";
         return jdbcTemplate.query(sqlQuery, new MapRowForFilm(), countLikes);
-        //return jdbcTemplate.query(sqlQuery, this::mapRowForFilms, countLikes);
     }
 
     @Override

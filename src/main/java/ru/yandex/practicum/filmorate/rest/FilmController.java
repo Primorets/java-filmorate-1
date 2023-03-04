@@ -14,8 +14,12 @@ import java.util.*;
 @RequestMapping("films")
 public class FilmController {
 
-    @Autowired
     public FilmService filmService;
+
+    @Autowired
+    public FilmController(FilmService filmService) {
+        this.filmService = filmService;
+    }
 
     @GetMapping
     public List<Film> getFilms() {
@@ -39,14 +43,12 @@ public class FilmController {
     }
 
     @PutMapping
-    public Film updateUser(@Valid @RequestBody Film film) {
-        filmService.getFilmOnId(film.getId());
-        filmService.createFilm(film);
+    public Film updateFilm(@Valid @RequestBody Film film) {
         log.info("Обновлены данные по фильму: " +
                 film.getName() + " ID: " + film.getId() + " Описание: " +
                 film.getDescription() + " Дата выхода: " + film.getReleaseDate() +
                 " Продолжительность: " + film.getDuration());
-        return film;
+        return filmService.updateFilm(film);
     }
 
     @GetMapping("popular")
